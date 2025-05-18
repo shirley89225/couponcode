@@ -1,0 +1,27 @@
+FROM php:8.2-apache
+
+# 安裝必要的 PHP 擴展
+RUN apt-get update && apt-get install -y \
+    libzip-dev \
+    zip \
+    unzip \
+    && docker-php-ext-install zip
+
+# 啟用 Apache 模組
+RUN a2enmod rewrite
+
+# 設置工作目錄
+WORKDIR /var/www/html
+
+# 複製 PHP 文件到容器
+COPY . /var/www/html/
+
+# 設置權限
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
+
+# 暴露 80 端口
+EXPOSE 80
+
+# 啟動 Apache
+CMD ["apache2-foreground"]
